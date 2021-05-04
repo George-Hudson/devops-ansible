@@ -1,5 +1,7 @@
 ---
 - hosts: all
   tasks:
+    - name: Use builtin.script to copy and run convert-script.sh
+      ansible.builtin.script: ./convert-script.sh
     - debug:
-        msg: Hello, world
+        msg: What? My cheeky solution doesn't work right off the bat?
