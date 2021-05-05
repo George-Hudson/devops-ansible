@@ -46,10 +46,10 @@
       args:
         chdir: /tmp/build_app/app
 
-    - name: Reload myapp
+    - name: Restart myapp to capture changes
       systemd:
         name: myapp
-        state: reloaded
+        state: restarted
 
     - debug:
         msg: Hello, world
