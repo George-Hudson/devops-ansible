@@ -1,0 +1,4 @@
+- yum: #this *should* be skipped if I set up the ansible facts and booleans correctly
+    name: barfoo-v1.2.3.4 # if this gets run, it should break... using to test 'when'
+    state: latest
+    update_cache: yes

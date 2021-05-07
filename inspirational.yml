@@ -1,0 +1,44 @@
+---
+- name: Prepare hosts
+  hosts: all
+  become: yes
+
+  pre_tasks:
+  - name: update yum
+    tags: always
+    yum:
+      update_cache: yes
+    changed_when: false
+    when: ansible_distribution == "CentOS"
+
+  - name: set use_docker fact (for playing around with 'when' later)
+    set_fact:
+      container_tool: docker
+      foo: baz
+      cacheable: yes
+
+- name: install base packages
+  hosts: all
+  become: yes
+  roles:
+    - base
+
+- name: set up web servers
+  hosts: web_servers
+  become: yes
+  roles:
+    - web_servers
+
+- name: Test it works!
+  hosts: web_servers
+
+  post_tasks:
+  - name: Check that a page returns a status 200 and fail if the 'Earthling' set in group_vars is not in the page contents
+    uri:
+      url: http://localhost:8000
+      return_content: yes
+    register: inspirational_output
+    failed_when: "'Earthling' not in inspirational_output.content"
+
+  - debug: 
+      var: inspirational_output

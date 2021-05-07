@@ -1,0 +1,39 @@
+- name: Copy myapp.service to /etc/systemd/system/myapp.service
+  copy: 
+    src: myapp.service
+    dest: /etc/systemd/system/myapp.service
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Make sure docker is enabled and running
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Make sure myapp.service is enabled and running
+  systemd:
+    name: myapp
+    enabled: yes
+    state: started
+
+- name: Copy app files
+  copy: 
+    src: app
+    dest: /tmp/build_app
+
+- name: build main.py from template
+  template: 
+    src: files/mainpy.j2
+    dest: /tmp/build_app/app/main.py
+
+- name: Build image from Dockerfile
+  shell: docker build -t myapp .
+  args:
+    chdir: /tmp/build_app/app
+
+- name: Restart myapp to capture changes
+  systemd:
+    name: myapp
+    state: restarted
